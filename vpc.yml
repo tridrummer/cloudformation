@@ -1,25 +1,44 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: A sample template
-#Parameters:
-#  FilePath:
-#    Description: The path of the  file.
-#    Type: String
-#    Default: /home/ec2-user/userdata
+Description: Creates a basic secure network environmet
+Parameters:
+  Env:
+    Description: The type of environment
+    Type: String
+    AllowedValues:
+    - dev
+    - sys
+    - test
+    - perf
+    - prod
+    
+  VPCCidrBlock:
+    Description: Cidr Block for the VPC
+    Type: String
+    Default: 10.0.0.0/16
 
 Resources:
   VirtualPrivateCloud:
     Type: AWS::EC2::VPC
     Properties: 
-      CidrBlock: 10.0.0.0/16
+      CidrBlock: !Ref VPCCidrBlock
       EnableDnsSupport: true
       EnableDnsHostnames: false
       InstanceTenancy: default
+      Tags:
+      - Key: Env
+        Value: !Ref Env
 
-#Need to fix this part.....
 Outputs:
-  VPCCidirBlock:
+  VPCCidrBlock:
     Description: CidrBlock for the VPC
     Value: 
-       Fn::GetAtt:VirtualPrivateCloud.CidrBlock
+      !GetAtt VirtualPrivateCloud.CidrBlock
     Export:
-      Name: VPCCidirBlock
+      Name: VPCCidrBlock
+      
+  VPCID:
+    Description: CidrBlock for the VPC
+    Value: 
+      !Ref VirtualPrivateCloud
+    Export:
+      Name: VPCID
