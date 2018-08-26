@@ -15,6 +15,11 @@ Parameters:
     Description: Cidr Block for the VPC
     Type: String
     Default: 10.0.0.0/16
+    
+  PrivateSubnet1CidrBlock:
+    Description: Cidr Block for the VPC
+    Type: String
+    Default: 10.0.1.0/24
 
 Resources:
   VirtualPrivateCloud:
@@ -27,6 +32,25 @@ Resources:
       Tags:
       - Key: Env
         Value: !Ref Env
+     # - Key: Name
+     #   Value: !Sub
+     #          - "VPC-{Env}"
+     
+               
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      #AvailabilityZone: String
+      CidrBlock: !Ref PrivateSubnet1CidrBlock
+      MapPublicIpOnLaunch: false
+      VpcId: !Ref VirtualPrivateCloud
+      Tags:
+      - Key: Env
+        Value: !Ref Env
+    #  - Key: Name
+    #    Value: !Sub
+    #           - "PrivateSubnet1-{Env}"
+            
 
 Outputs:
   VPCCidrBlock:
@@ -37,8 +61,15 @@ Outputs:
       Name: VPCCidrBlock
       
   VPCID:
-    Description: CidrBlock for the VPC
+    Description: CidrBlock for VPC
     Value: 
       !Ref VirtualPrivateCloud
     Export:
       Name: VPCID
+      
+  PrivateSubnet1ID:
+    Description: Subnet ID for PrivateSubnet1
+    Value: 
+      !Ref PrivateSubnet1
+    Export:
+      Name: PrivateSubnet1ID
