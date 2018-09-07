@@ -1,3 +1,12 @@
+#************************************************************************************
+#*  Template created by Brian Ruter - drum4ever71@aol.com
+#*  To Do....
+#*    -Set up Nat Instance (Nat Gateway is not included in free tier
+#*    -Set up Route Table
+#*    -Make everything highly avaliable (multi AZ)
+#*    -Create an EC2 instance in the private subnet
+#************************************************************************************ 
+
 AWSTemplateFormatVersion: "2010-09-09"
 Description: Creates a basic secure network environmet
 Parameters:
@@ -40,8 +49,9 @@ Resources:
       - Key: Name
         Value: !Sub VPC-${Env} 
 
-     
-               
+##############################
+# Create Subnets             #
+##############################               
   PrivateSubnet1:
     Type: AWS::EC2::Subnet
     Properties:
@@ -68,6 +78,90 @@ Resources:
       - Key: Name
         Value: !Sub PublicSubnet1-${Env}        
 
+###########################################
+# Create Security Group for nat instance  #
+########################################### 
+  InstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub NAT-Instance-SG-${Env}
+      GroupDescription: Allow outbound traffic on 443 and 80,  inbound from VPC only
+      VpcId: !Ref VirtualPrivateCloud
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: !Ref VPCCidrBlock
+      - IpProtocol: tcp
+        FromPort: 443
+        ToPort: 443
+        CidrIp: !Ref VPCCidrBlock
+      SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 443
+        ToPort: 443
+        CidrIp: 0.0.0.0/0
+##############################
+#Ceate NAT Instance       
+#  UNDER CONSTRUCTION!!!   #
+##############################     
+#  Type: AWS::EC2::Instance
+#  Properties: 
+#    Affinity: String
+#    AvailabilityZone: String
+#    BlockDeviceMappings: 
+#      - EC2 Block Device Mapping
+#   CreditSpecification: CreditSpecification
+#    DisableApiTermination: Boolean
+##    EbsOptimized: Boolean
+#    ElasticGpuSpecifications: [ ElasticGpuSpecification, ... ]
+#    HostId: String
+#    IamInstanceProfile: String
+#    ImageId: String
+#    InstanceInitiatedShutdownBehavior: String
+#    InstanceType: String
+#    Ipv6AddressCount: Integer
+#    Ipv6Addresses:
+#      - IPv6 Address Type
+#    K ernelId: String
+#    KeyName: String
+#    LaunchTemplate: Amazon EC2  Instance LaunchTemplateSpecification
+#    Monitoring: Boolean
+#    NetworkInterfaces: 
+#    - EC2 Network Interface
+#    PlacementGroupName: String
+#    PrivateIpAddress: String
+#    RamdiskId: String
+#    SecurityGroupIds: 
+#    - String
+#    SecurityGroups: 
+#    - String
+#    SourceDestCheck: Boolean
+#    SsmAssociations: 
+#      - SSMAssociation
+#    SubnetId: String
+#    Tags: 
+#    - Resource Tag
+#    Tenancy: String
+#    UserData: String
+#    Volumes: 
+#    - EC2 MountPoint
+#    AdditionalInfo: String
+
+
+##############################
+#Ceate Route Table           #
+############################## 
+
+
+  
+##############################
+#Export Values               #
+############################## 
 Outputs:
   VPCCidrBlock:
     Description: CidrBlock for the VPC
